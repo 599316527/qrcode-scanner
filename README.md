@@ -1,18 +1,8 @@
 # qrcode-scanner
 
-> A Vue.js project
+[DEMO](https://hk1229.cn/demo/qrcode-scanner/)
 
-## Build Setup
+Works on Chrome 53+ & FF 38+ theoretically.
 
-``` bash
-# install dependencies
-npm install
 
-# serve with hot reload at localhost:8080
-npm run dev
 
-# build for production with minification
-npm run build
-```
-
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
