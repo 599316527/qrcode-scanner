@@ -1,6 +1,7 @@
 <template>
   <div class="comp-scanner">
     <video class="realtime-video" autoplay ref="video" muted playsinline
+      @click="handleVideoClick"
       @playing="handleVideoPlaying" @timeupdate="handleVideoTimeUpdate"></video>
     <canvas class="frame" ref="frame" :width="videoWidth" :height="videoHeight"></canvas>
     <div class="ui-layer">
@@ -106,6 +107,10 @@ export default {
       else {
         this.decodeErrorText = error
       }
+    },
+
+    handleVideoClick() {
+      this.$refs.video.play()
     }
   },
   mounted() {
