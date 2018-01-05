@@ -1,10 +1,11 @@
 <template>
   <div class="comp-scanner">
-    <video class="realtime-video" autoplay ref="video"
+    <video class="realtime-video" autoplay ref="video" muted playsinline
       @playing="handleVideoPlaying" @timeupdate="handleVideoTimeUpdate"></video>
     <canvas class="frame" ref="frame" :width="videoWidth" :height="videoHeight"></canvas>
     <div class="ui-layer">
       <div class="device-picker">
+        选择相机：
         <select v-model="sourceId" @change="handleSourceIdChange" title="Devices">
           <option v-for="device in devices" :value="device.deviceId">{{device.label}}</option>
         </select>
@@ -23,6 +24,7 @@
 
 <script>
 import QrCode from 'qrcode-reader'
+import Stats from 'stats.js'
 
 export default {
   name: 'scanner',
@@ -73,9 +75,11 @@ export default {
           }
       }).then(stream => {
           let video = this.$refs.video
-          video.src = window.URL.createObjectURL(stream)
+          video.srcObject = stream
+          video.play()
       }).catch(err => {
-          this.videoErrorText = err.name + ' ' + err.message
+          this.videoErrorText = `<strong>${err.name}</strong> ${err.message}`
+          throw(err)
       })
     },
 
@@ -85,12 +89,14 @@ export default {
     },
 
     handleVideoTimeUpdate() {
+      this.stats.begin()
       let video = this.$refs.video
       let context = this.frameContext
       let qr = this.qrCode
       context.drawImage(video, 0, 0, this.videoWidth, this.videoHeight)
       let imageData = context.getImageData(0, 0, this.videoWidth, this.videoHeight)
       qr.decode(imageData)
+      this.stats.end()
     },
 
     hanleQrCodeDecoded(result, error) {
@@ -104,7 +110,9 @@ export default {
   },
   mounted() {
     this.frameContext = this.$refs.frame.getContext('2d')
-
+    this.stats = new Stats()
+    this.stats.showPanel(0)
+    document.body.appendChild(this.stats.dom)
 
     let qr = new QrCode()
     qr.callback = this.hanleQrCodeDecoded
@@ -121,12 +129,20 @@ export default {
       else {
         this.videoErrorText = 'No available cameras'
       }
+    }).catch(err => {
+        this.videoErrorText = `<strong>${err.name}</strong> ${err.message}`
+        throw(err)
     })
   }
 }
 </script>
 
 <style scoped>
+.comp-scanner {
+  color: white;
+  background: #333;
+}
+
 a {
   text-decoration: none;
 }
@@ -160,7 +176,6 @@ a {
 }
 
 [class^=text-] {
-  color: white;
   word-wrap: break-word;
   padding-left: .3em;
   padding-right: .3em;

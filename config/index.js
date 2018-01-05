@@ -1,5 +1,6 @@
 // see http://vuejs-templates.github.io/webpack for documentation.
 var path = require('path')
+var fs = require('fs')
 
 module.exports = {
   build: {
@@ -19,6 +20,11 @@ module.exports = {
   dev: {
     env: require('./dev.env'),
     port: 8080,
+    https: true,
+    credentials: {
+      key: fs.readFileSync(path.resolve(__dirname, './privatekey.pem'), 'utf8'),
+      cert: fs.readFileSync(path.resolve(__dirname, './certificate.pem'), 'utf8')
+    },
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {},
